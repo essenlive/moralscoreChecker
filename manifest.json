@@ -1,0 +1,26 @@
+{
+  "manifest_version": 2,
+  "name": "Moralscore Checker",
+  "version": "0.1.0",
+  "description": "Easily check if the moralscores of the companies you are looking at.",
+  "homepage_url": "https://github.com/essenive/moralscore-checker",
+  "icons": {
+    "32": "assets/icon-32.png",
+    "64": "assets/icon-64.png",
+    "128": "assets/icon-128.png"
+  },
+
+  "permissions": [
+    "activeTab"
+  ],
+
+  "browser_action": {
+    "browser_style": false,
+    "default_icon": {
+      "32": "assets/icon-32.png"
+    },
+    "default_title": "Click to find the moralscores.",
+    "default_popup": "popup.html"
+  }
+
+}
