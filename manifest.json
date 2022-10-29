@@ -3,7 +3,7 @@
   "name": "Moralscore Checker",
   "version": "0.1.0",
   "description": "Easily check if the moralscores of the companies you are looking at.",
-  "homepage_url": "https://github.com/essenive/moralscore-checker",
+  "homepage_url": "https://github.com/essenlive/moralscoreChecker",
   "icons": {
     "32": "assets/icon-32.png",
     "64": "assets/icon-64.png",
