@@ -104,15 +104,15 @@ function getBetterAlternatives(company, maxOutput = 3){
 function getColorGrade(grade){
   if ( typeof grade === "number") {
     if (grade < 35) return "black"
-    if (grade < 30) return "red"
-    if (grade < 60) return "orange"
+    if (grade < 50) return "maroon"
+    if (grade < 60) return "red"
     if (grade < 70) return "olive"
     return "green"
   }
   else{
     if (grade.indexOf("A") >= 0) return "green"
     if (grade.indexOf("B") >= 0) return "olive"
-    if (grade.indexOf("C") >= 0) return "red"
+    if (grade.indexOf("C") >= 0) return "maroon"
     if (grade.indexOf("D") >= 0) return "black"
   }
 }
@@ -125,21 +125,24 @@ utils.getId('about-link').addEventListener('click', (e) => {
   });
 });
 
-
 const $content = utils.getId('content');
 
 
 chrome.tabs.query({active:true,currentWindow:true}, async (tabs) => {
-
   
   const _thisTab = tabs[0]
   const _thisUrl = _thisTab.url;
   const _thisTitle = _thisTab.title;
+
+  window.addEventListener("unload", function () {
+    chrome.browserAction.setBadgeText({ text: "", tabId: _thisTab.id });
+  });
   
   if (new RegExp('^https?://.+$').test(_thisUrl)) {
 
     const _cleanUrl = cleanUrl(_thisUrl);
     // console.log(await getAllCompanies());
+
     chrome.tabs.executeScript(_thisTab.id, { code: 'document.querySelector("body").innerText' }, content=>{
 
       let companiesName = companies.map(el => el.name);
@@ -147,7 +150,12 @@ chrome.tabs.query({active:true,currentWindow:true}, async (tabs) => {
       mainCompany = companies.filter((el) => (mainCompany.indexOf(el.name) >= 0))
       let [namedCompanies,] = searchStrings(content, leftovers, true)
       namedCompanies = companies.filter((el) => (namedCompanies.indexOf(el.name) >= 0))
-      render([mainCompany, namedCompanies].flat())
+
+      chrome.browserAction.setBadgeBackgroundColor({ color: '#000' }, () => {
+        chrome.browserAction.setBadgeText({ text: [...mainCompany, ...namedCompanies].length === 0 ? "" : [...mainCompany, ...namedCompanies].length.toString(), tabId: _thisTab.id });
+      });
+
+      render([...mainCompany, ...namedCompanies].flat())
 
     });
   } else {
@@ -162,14 +170,14 @@ function render(data) {
   while ($content.firstChild) {
    $content.removeChild($content.lastChild);
   }
-  
+
   if (data instanceof Error) {
     $content.appendChild( utils.stringToDom(`<li class="p2 my1"><p class="mb1">Sorry, something went wrong :</p><pre class="m0">${data.message}</pre></li>`) );
     return;
   }
 
   if (!data || data.length === 0) {
-    $content.appendChild(utils.stringToDom(`<li class="p2 my1" style="max-width:500px"><p class="mb1">Désolé, nous n'avons trouvé aucune marque présente sur MoralScore... mais c'est peut-être une erreur. Allez verifier directement sur Moralscore.</p><p class="m0"><button class="btn btn-small btn-primary h6 uppercase" data-link="https://moralscore.org/search/">Chercher sur Moralscore</button></p></li>`));
+    $content.appendChild(utils.stringToDom(`<li class="p2" style="max-width:500px"><p class="mb1">Désolé, nous n'avons trouvé aucune marque présente sur MoralScore... mais c'est peut-être une erreur. Allez verifier directement sur Moralscore.</p><p class="m0"><button class="btn btn-small btn-primary h6 uppercase" data-link="https://moralscore.org/search/">Chercher sur Moralscore</button></p></li>`));
   } 
   else {
 
@@ -179,7 +187,7 @@ function render(data) {
       const alt = getBetterAlternatives(el, 3)
 
       if (alt.length > 0) {
-        _alt += `<ul class="py1 px2 flex items-center  list-reset mb0">
+        _alt += `<ul class="py1 px2 flex items-center  list-reset mb0 border-bottom border-gray-2 ">
           <li class="gray-4 pr1" >Alternatives → </li>`
         alt.forEach((com, i) => {
           _alt += `<li title="Voir le moralscore de ${com.name}" class="flex pr1 items-center hover-t-gray gray-4" data-link="${com.url}"> <img style="width:16px;height:16px;" class="mr1 rounded " alt="${com.name} (logo)" src="${com.image[0].thumbnails.small.url}"><span>${com.name}</span> <span class="${getColorGrade(com.score)} mx1">${com.score}</span> ${i < alt.length - 1 ? '•' : ''}
@@ -189,8 +197,8 @@ function render(data) {
       }
 
       _node += `
-        <li class="border-bottom border-gray-2 hover-gray flex flex-column">
-          <div title="Voir le moralscore de ${el.name}" class="py1 px2 border-bottom border-gray-1 flex items-center" data-link="${el.url}">
+        <li style="border-width:3px" class="border-left border-${getColorGrade(el.score)} hover-gray flex flex-column">
+          <div title="Voir le moralscore de ${el.name}" class="py1 px2 border-bottom border-gray-2 flex items-center" data-link="${el.url}">
             <img style="width:36px;height:36px;" class="mr2 rounded col-1" alt="${el.name} (logo)" src="${el.image[0].thumbnails.small.url}">
             <div class="col-11">
               <span class="block mb1 h6"><strong>${el.name}</strong> <span style="padding-bottom: 0.25rem" class="border-${getColorGrade(el.score)} border ml1 tabbed px1">${el.score} / 100</span></span>
