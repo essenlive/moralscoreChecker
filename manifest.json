@@ -21,6 +21,12 @@
     },
     "default_title": "Click to find the moralscores.",
     "default_popup": "popup.html"
-  }
+  },
 
+  "content_scripts": [
+    {
+      "matches": ["*://*/*"],
+      "js": ["check.js"]
+    }
+  ]
 }
