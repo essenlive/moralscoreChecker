@@ -180,7 +180,6 @@ function render(data) {
     $content.appendChild(utils.stringToDom(`<li class="p2" style="max-width:500px"><p class="mb1">Désolé, nous n'avons trouvé aucune marque présente sur MoralScore... mais c'est peut-être une erreur. Allez verifier directement sur Moralscore.</p><p class="m0"><button class="btn btn-small btn-primary h6 uppercase" data-link="https://moralscore.org/search/">Chercher sur Moralscore</button></p></li>`));
   } 
   else {
-
     let _node = '';
     data.forEach((el) => {
       let _alt = '';
@@ -190,7 +189,12 @@ function render(data) {
         _alt += `<ul class="py1 px2 flex items-center  list-reset mb0 border-bottom border-gray-2 ">
           <li class="gray-4 pr1" >Alternatives → </li>`
         alt.forEach((com, i) => {
-          _alt += `<li title="Voir le moralscore de ${com.name}" class="flex pr1 items-center hover-t-gray gray-4" data-link="${com.url}"> <img style="width:16px;height:16px;" class="mr1 rounded " alt="${com.name} (logo)" src="${com.image[0].thumbnails.small.url}"><span>${com.name}</span> <span class="${getColorGrade(com.score)} mx1">${com.score}</span> ${i < alt.length - 1 ? '•' : ''}
+          _alt += `<li class="flex pr1 items-center gray-4">
+            <img style="width:16px;height:16px;" class="mr1 rounded " alt="${com.name} (logo)" src="${com.image[0].thumbnails.small.url}">
+            <strong class="${getColorGrade(com.score)} mr1">${com.score}</strong>
+            <span class="hover-t-gray mr1" title="Voir le moralscore de ${com.name}" data-link="${com.url}">${com.name}</span>
+            <span class="hover-t-gray mr1" title="Voir le site de ${com.name}" data-link="${com.site}">🡥</span>
+            ${i < alt.length - 1 ? '•' : ''}
           </li>`
         })
         _alt += `</ul>`
@@ -201,7 +205,11 @@ function render(data) {
           <div title="Voir le moralscore de ${el.name}" class="py1 px2 border-bottom border-gray-2 flex items-center" data-link="${el.url}">
             <img style="width:36px;height:36px;" class="mr2 rounded col-1" alt="${el.name} (logo)" src="${el.image[0].thumbnails.small.url}">
             <div class="col-11">
-              <span class="block mb1 h6"><strong>${el.name}</strong> <span style="padding-bottom: 0.25rem" class="border-${getColorGrade(el.score)} border ml1 tabbed px1">${el.score} / 100</span></span>
+              <div class="block mb1 h6">
+              <strong class="mr1">${el.name}</strong> • 
+              <span class="ml1 gray-4" >${el.secteur}</span>
+                <span style="padding-bottom: 0.25rem" class="border-${getColorGrade(el.score)} border ml1 tabbed px1">${el.score} / 100</span>
+              </div>
               <div class="block h6 gray-4 relative"> 
                 <span><abbr title="${el.environmentDetail}"> Environnement : <strong class="${getColorGrade(el.environmentScore)}"> ${el.environmentScore}</abbr></strong> • </span>               
                 <span><abbr title="${el.fiscalDetail}"> Fiscal : <strong class="${getColorGrade(el.fiscalScore)}"> ${el.fiscalScore}</abbr></strong> • </span>               
