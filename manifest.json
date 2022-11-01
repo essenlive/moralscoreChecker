@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "Moralscore Checker",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Easily check if the moralscores of the companies you are looking at.",
   "homepage_url": "https://github.com/essenlive/moralscoreChecker",
   "icons": {
@@ -22,11 +22,15 @@
     "default_title": "Click to find the moralscores.",
     "default_popup": "popup.html"
   },
+ "content_scripts": [
+   {
+     "matches": ["*://*/*"],
+     "js": ["companiesNames.js", "utils.js", "content.js"]
+   }
+ ],
+"background": {
+  "scripts": ["background.js"],
+  "persistent": false
+}
 
-  "content_scripts": [
-    {
-      "matches": ["*://*/*"],
-      "js": ["check.js"]
-    }
-  ]
 }
